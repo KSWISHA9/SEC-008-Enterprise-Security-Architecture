@@ -1,0 +1,42 @@
+# Readiness Checklist
+
+Status: **In progress**. Authentication and controlled service recovery phases are documented. This checklist is not approval to publish.
+
+## Verified in Current Evidence
+
+- [x] Existing evidence preserved; new copies use distinct, content-accurate names.
+- [x] AUTH-01 through AUTH-05 and REC-01 through REC-03 indexed with actual results.
+- [x] Ubuntu valid credentials return 200; application marker verified.
+- [x] Kali valid credentials return 200; application marker verified before recovery.
+- [x] Incorrect credentials rejected; Windows source blocked at TCP 8080.
+- [x] Controlled stop yields inactive/no listener/HTTP 000/curl exit 7.
+- [x] Restart restores listener and unauthenticated 401.
+- [x] Kali post-recovery no/invalid credentials rejected; ping 2/2.
+- [x] New screenshot visual secrets review completed; no valid secret value observed.
+- [x] HTTP Basic without TLS and DNS-001 remain open in documentation.
+- [x] Full Zero Trust and successful backup restoration are not claimed.
+
+## Remaining Lab Evidence
+
+- [ ] Dedicated Kali unauthenticated 401 before recovery, if preserving that chronology is required; currently operator-reported.
+- [ ] Valid credentials returning 200 and verified content after recovery.
+- [ ] Fresh Windows TCP denial after recovery.
+- [ ] Authenticated application's reboot validation, including paired boot evidence and remote allow/deny tests.
+- [ ] Sanitized persistent network configuration, full systemd unit and UFW rule export.
+- [ ] Intended domain-root DNS behavior documented and DNS-001 investigated/revalidated.
+- [ ] TLS, credential handling and brute-force controls assessed; do not imply these are implemented.
+- [ ] Backup/snapshot restoration tested separately from service restart.
+- [ ] Recovery timing captured before claiming RTO/RPO results.
+
+## Before Publication
+
+- [x] Complete visual review of all 54 retained screenshots, including historical DNS/baseline evidence; decisions are recorded in the publication manifest.
+- [ ] Resolve PUB-001: AUTH-03, REC-03 and archived TRB-02 show rejected password literals. Preserve originals; prepare password-free publication versions and re-review them.
+- [ ] Confirm visible lab metadata is acceptable for public display.
+- [ ] Re-run file-name/content secret checks and links against the exact release set after held images are addressed.
+- [ ] Verify or create the correct GitHub repository only with the operator's authorization; SEC-001/SEC-002 are separate.
+- [ ] Review the final diff and approve staging/commit/push. No approval has been given for publication.
+
+Each missing item is evidence or design follow-up, not an instruction to alter the VMs during repository maintenance.
+
+See [Publication Review](Publication-Review.md) for the current 51 no-visible-secret / 3 held-image decisions. The documentation is ready for review of current results; the project and publication checklist are not complete.

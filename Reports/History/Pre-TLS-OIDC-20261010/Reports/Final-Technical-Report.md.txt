@@ -1,0 +1,104 @@
+# SECX-001 Technical Report
+
+Review date: 2026-10-10. Status: **In progress - current evidence review**. The filename is the project's consolidated technical report; it does not mark the project complete or authorize publication.
+
+## Objective and Business Impact
+
+Protect an internal training application's access path, add application authentication, and verify that a controlled service restart restores the authentication endpoint. In a business setting, these controls can reduce unnecessary workload exposure and unauthorized content access while supporting service recovery. This isolated lab demonstrates the tested behavior; no production deployment, financial savings, uptime SLA or enterprise certification is claimed.
+
+The most useful evidence is the sequence: unrestricted baseline, restrictive UFW policy, approved-path access, non-approved client denial, credential rejection/success, controlled outage, restart and remote negative retests. Those stages explain the purpose of each control rather than treating every HTTP response as equivalent.
+
+## Environment and Architecture
+
+Ubuntu serves the application at 10.10.10.101:8080 through secx001-app.service. The earlier service used Python SimpleHTTP; the authentication deployment points ExecStart to auth_server.py. UFW permits the configured Kali source 10.10.10.100 on enp0s8 and administrative SSH on enp0s3. The Windows negative test identifies source 10.10.10.1. OV-DC01 at 10.10.10.10 is used for separate AD/DNS investigation.
+
+The [architecture diagram](../Architecture/Architecture.md) is an evidence-based logical reconstruction. It is not an exported hypervisor configuration. The allowed Kali IP is visible in the UFW rule, while a dedicated Kali source-address inventory capture is still missing. The administrative SSH alias configuration is also missing.
+
+## Threat Model and Trust Boundaries
+
+| Scenario | Boundary / Control | Observed Mitigation | Remaining Risk |
+| --- | --- | --- | --- |
+| Unapproved client probes the app | Ubuntu host firewall | Windows TCP 8080 test fails; earlier UFW events show matching blocks | Current full rules/export, IPv6 and other paths not comprehensively tested |
+| Approved-path client has no credentials | Application HTTP Basic | Ubuntu 401 and post-recovery Kali 401 | Plaintext transport exposes any subsequently supplied credentials |
+| Approved-path client submits invalid credentials | Application credential check | Kali 401 before and after restart | Rate limiting, lockout and brute-force handling not evidenced |
+| Approved-path client has valid credentials | Local application account | Ubuntu/Kali Python requests return 200; content check true | No enterprise identity, device assurance, role separation or credential lifecycle demonstrated |
+| Service becomes unavailable | systemd restart and socket/HTTP validation | Controlled stop removes listener; restart restores listener and 401 challenge | Valid-credential post-recovery access and recovery timing not verified |
+| DNS resolves unexpectedly | DNS dependency and investigation | DC/GC names resolve; domain-root A answer is empty in latest detailed query | DNS-001 remains open pending intended record policy and validation |
+
+The network boundary and application boundary are independent. A 401 proves that an HTTP authentication endpoint answered a reachable request. A blocked TCP connection prevents reaching that endpoint. Neither is proof of complete enterprise Zero Trust.
+
+## Security Controls
+
+- Host-based microsegmentation: incoming UFW default deny with a source-, interface- and port-specific application allow.
+- Administrative path: SSH permitted on the NAT-facing interface, including IPv6, from Anywhere on that interface. This is not a source-restricted administrative rule.
+- Application authentication: HTTP Basic with a local application account. Valid password entry uses getpass in the successful Python tests.
+- Operational control: systemd service state, enablement and listener checks; controlled stop/start exercise.
+- Monitoring: UFW block events correlated by source, destination, port and interface; application journal includes request status.
+- Recovery preparation: existing DNS snapshot and export evidence, separate from service restart validation.
+
+HTTP Basic without TLS remains a material security limitation: Basic encoding does not encrypt credentials, and content is also unencrypted. The authentication implementation and configuration were not exported or inspected, so password storage and comparison behavior are not certified by these tests.
+
+## Test Methodology and Actual Results
+
+Evidence was visually reviewed, copied without altering pixels, and matched to source SHA-256 hashes. No tests were run against the VMs during repository maintenance. Operator-reported results are identified where the available frame does not independently establish them.
+
+| Test | Expected | Actual | Basis |
+| --- | --- | --- | --- |
+| Ubuntu no credentials | 401 | HTTP 401, Basic challenge and listener visible | AUTH-01; unnamed source chosen instead of mislabeled startup image |
+| Ubuntu valid credentials | 200 and expected content | AUTH RESULT 200; CONTENT VERIFIED True | AUTH-02, Python |
+| Kali no credentials before recovery | 401 | Reported 401; dedicated pre-recovery capture not found | Operator-reported; do not substitute REC-03 chronology |
+| Kali invalid credentials | 401 | HTTP 401 | AUTH-03 |
+| Kali valid credentials | 200 and expected content | REMOTE AUTHENTICATION 200; APPLICATION VERIFIED True | AUTH-04, Python |
+| Windows source 10.10.10.1 to 10.10.10.101:8080 | TCP denied | TcpTestSucceeded False; ping succeeds | AUTH-05 |
+| Controlled stop | Service inactive; no listener; connection failure | Inactive; no listener row; HTTP 000 / curl exit 7 | REC-01 controlled outage |
+| Service restart | Service/listener available; unauthenticated 401 | Active; listener 10.10.10.101:8080; HTTP 401 | REC-02 |
+| Kali no credentials after recovery | 401 | HTTP 401 | REC-03 |
+| Kali invalid credentials after recovery | 401 | HTTP 401 | REC-03 |
+| Kali reachability after recovery | 2 successful pings | 2/2 replies, zero packet loss | REC-03 |
+| Kali valid credentials after recovery | 200 and verified content | Not screenshot-verified | Missing; earlier AUTH-04 is not a recovery retest |
+| Windows denial after recovery | TCP denied | Fresh post-recovery test not located | Missing; AUTH-05 is separate earlier evidence |
+
+HTTP 000 in the outage capture is curl's no-response value, not an HTTP status returned by the application. Exit 7 supports connection failure. The pre-recovery valid-content checks test for the OmniVerse marker; they are not a complete integrity check of all application content.
+
+## Troubleshooting and Naming Corrections
+
+The source AUTH-01-Unauthenticated-Access-Denied.png in Pictures/Screenshots actually shows HTTP 000 and no listener. Its project copy is archived as TRB-01, while the requested primary AUTH-01 filename now contains the verified 401 diagnostic from Screenshot 165103. That frame also includes a journal boot boundary consistent with earlier service startup evidence. This corroborates earlier reboot chronology but does not complete authenticated application reboot-persistence tests. The identical source and primary basename must not be confused: the provenance manifest identifies their different contents.
+
+Screenshot 165224 shows local unauthenticated and incorrect requests returning 401, plus an attempted correct-credential interactive curl request also returning 401. The cause is unknown. A later Python request succeeds; this does not retroactively make the earlier curl test a success. AUTH-03 demonstrates only invalid credentials, despite its broader original name. UTH-05 was corrected to AUTH-05, and duplicate .png extensions were removed in project copies.
+
+The legacy REC-01 DNS snapshot filename is preserved. Its index label explicitly distinguishes rollback preparation from the new controlled-outage REC-01. Generic/named exact duplicates were matched by hash and not imported twice. Original source files were not renamed or deleted.
+
+The requested final filenames were applied to project copies; failed/superseded authentication attempts and the legacy snapshot are retained in Evidence/Archive. The 22-capture [primary set](../Evidence/PRIMARY-INDEX.md) includes the selected DNS evidence without implying DNS resolution. [Filename changes](../Evidence/filename-change-map.csv) map prior project paths to current paths while preserving SHA-256 identity.
+
+## Findings and Remaining Risks
+
+The [findings register](../Findings/REGISTER.md) keeps DNS-001 open and tracks plaintext Basic transport, missing post-recovery positive access, administrative exposure review, backup restoration, and protocol/persistence coverage. Service restart validation does not close backup restore or reboot findings.
+
+The deployment shows host-based microsegmentation and local application authentication. It does not show full enterprise Zero Trust, central identity federation, MFA, device posture, TLS, role-based authorization, high availability or disaster recovery. Project completion remains pending the operator's remaining work and the [readiness checklist](Readiness-Checklist.md).
+
+## Evidence and Publication Handling
+
+All 54 retained PNGs were individually visually reviewed, including archived, supplemental, DNS and root-level baseline evidence. Successful authentication frames show hidden input prompts, variable references and constructed Basic-header code, but no valid password or encoded header value. Three negative-test images contain explicit rejected password literals and are held from publication under PUB-001. Those values are not transcribed into documentation. No auth.conf, private key or credential configuration was imported. Visual review is not an automated guarantee against hidden metadata or steganography.
+
+New images match their originals exactly; the [provenance manifest](../Evidence/Authentication-Recovery-Provenance.csv) includes named/generic duplicate matches. Before-state documentation and images are preserved in the Codex review workspace. Historical reports describe earlier phases and are linked to this current report rather than silently treated as current conclusions.
+
+Discovery included accessible Pictures, Downloads, Desktop, Documents, C:/Terraform and OneDrive paths for relevant screenshot names and lab script/configuration references. New evidence was located in Pictures/Screenshots. This was a scoped portfolio search, not a claim to classify every unrelated file on the computer. The [current image inventory](../Evidence/evidence-sha256-final-names.csv) includes all 54 retained project PNGs using the final filenames. Earlier inventories are preserved historical snapshots.
+
+No VM, firewall, network or service configuration was modified. No files were deleted, staged, committed or pushed. The project has no local Git metadata; the proposed changes are reviewed through git diff --no-index against the saved before-state. Publication remains blocked pending password-free versions of the three held images, correct repository selection and explicit operator approval. The [publication review](Publication-Review.md) records the current review scope and the [per-image manifest](../Evidence/Publication-Review.csv) ties the decision to exact SHA-256 hashes.
+
+## Evidence Navigation
+
+| Phase | Screenshot Links | Interpretation |
+| --- | --- | --- |
+| Local authentication | [AUTH-01](../Evidence/Authentication/AUTH-01-Unauthenticated-Access-Denied.png), [AUTH-02](../Evidence/Authentication/AUTH-02-Valid-Credentials-HTTP-200.png) | Ubuntu challenge and valid-content result |
+| Remote authentication | [AUTH-03](../Evidence/Authentication/AUTH-03-Kali-Unauthorized-Requests.png), [AUTH-04](../Evidence/Authentication/AUTH-04-Kali-Authorized-Access.png), [AUTH-05](../Evidence/Authentication/AUTH-05-Unauthorized-Windows-Client-Blocked.png) | Kali rejection/success and Windows TCP denial; AUTH-03 is held for publication |
+| Recovery | [REC-01](../Evidence/Recovery/REC-01-Controlled-Application-Outage.png), [REC-02](../Evidence/Recovery/REC-02-Service-Restored-Authentication-Enforced.png), [REC-03](../Evidence/Recovery/REC-03-Remote-Post-Recovery-Validation.png) | Outage, restart and remote negative checks only; REC-03 is held for publication |
+| DNS | [DNS-20](../Evidence/DNS/DNS-20-Controlled-DNS-Cleanup.png), [DNS-21](../Evidence/DNS/DNS-21-Kali-Client-Residual-Finding.png) | Cleanup history and remaining domain-root discrepancy, not full resolution |
+
+These links are local review evidence. A publication hold does not change a test's result and cannot be bypassed by retaining the same image under another name.
+
+## Recommended Next Work
+
+First protect the application transport before broader use and capture positive authenticated access after recovery. Next investigate the intended DNS root behavior, review SSH exposure and credential hardening, and complete persistence/protocol/restore validation. Priorities and evidence required for closure are in the [findings register](../Findings/REGISTER.md). Documentation is consolidated for the currently supplied evidence, not a declaration that these remaining lab tasks are complete.
+
+Basic transport limitations follow [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617.html#section-4). The distinction between this lab and enterprise Zero Trust follows [NIST SP 800-207](https://csrc.nist.gov/pubs/sp/800/207/final). Neither reference is a claim of compliance.

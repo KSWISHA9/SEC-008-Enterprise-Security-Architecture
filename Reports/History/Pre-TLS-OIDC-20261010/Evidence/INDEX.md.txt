@@ -1,0 +1,17 @@
+# Evidence Index
+
+Start with the [22-capture primary set](PRIMARY-INDEX.md). Earlier DNS and supplemental captures remain in their detailed indexes. Failed/superseded authentication attempts are retained in the [archive](Archive/INDEX.md) and excluded from the primary set.
+
+| Area | Index | Scope |
+| --- | --- | --- |
+| Segmentation | [SEG-01 through SEG-12](Segmentation/INDEX.md) | Exposure baseline, allow/deny tests, UFW rules, systemd state, reported persistence and event investigation |
+| Authentication | [AUTH-01 through AUTH-05](Authentication/INDEX.md) | Local/remote credential results and continued Windows TCP denial; accurately labeled troubleshooting captures |
+| DNS | [DNS evidence](DNS/INDEX.md) | Investigation chronology; unresolved domain-root discrepancy |
+| Monitoring | [Monitoring evidence](Monitoring/INDEX.md) | Links to existing UFW event evidence; no duplicate PNGs |
+| Recovery | [REC-01 through REC-03](Recovery/INDEX.md) | Controlled outage, service restart and remote negative authentication checks; legacy snapshot also retained; backup restore untested |
+
+Existing SECX001 baseline screenshots remain at the Evidence root. Historical hash inventories are retained. Segmentation [source provenance](Segmentation/source-provenance.csv) records full hashes and original filenames; additional discovery and inventory records are described in the [organization review](../Reports/Organization-Review.md).
+
+Images preserve original pixels. Copies were checked by SHA-256. Descriptions distinguish visible output from assumptions, intended behavior and missing validation. Original screenshots remain outside the project in Pictures/Screenshots; the Downloads evidence ZIP is also preserved.
+
+New authentication/recovery source hashes and visually reviewed filename mappings are in [Authentication-Recovery-Provenance.csv](Authentication-Recovery-Provenance.csv). Project-wide publication readiness is tracked in [Readiness-Checklist.md](../Reports/Readiness-Checklist.md).

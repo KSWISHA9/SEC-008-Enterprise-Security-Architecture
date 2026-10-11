@@ -1,0 +1,15 @@
+Source filename,Status,Normalized path or existing path,SHA256,Evidence description
+tLS-01-HTTPS-Service-Activation.png .png,Included,TLS/TLS-01-HTTPS-Service-Activation.png,194875c8b711b43c67501cf009bde0b56e8130724b5edb37517b2884e7ec9632,"HTTPS app active, 8443 listener, 401 challenge"
+Screenshot 2026-10-10 171757.png,Included,TLS/TLS-02-CA-Certificate-Chain.png,a1331ff7466a0f3bf96125d14ea2d76a231e329f5c8dc53a34bf97eb66ece992,"Lab CA signed server certificate, SAN and chain verification"
+TLS-03-Authenticated-HTTPS-Access.png(1).png,Already in previous ZIP,SECX-001-Reviewed-Evidence/TLS/TLS-03-Authenticated-HTTPS-Access.png,38e1687eb771b9a36345b856f01cccc00ef86c1bff24d192d7e65269a2b56239,HTTPS authentication proof; may duplicate previous package
+TLS-04-HTTP-Retired-HTTPS-Enforced.png (1).png,Already in previous ZIP,SECX-001-Reviewed-Evidence/TLS/TLS-04-HTTP-Retired-HTTPS-Enforced.png,190cedbf66336492f9e53de002f1b73d47a0983c4df507b16f3980ddb06fadaa,"HTTP retired, HTTPS 401"
+REC-01-Controlled-Application-Outage(1).png,Included,Recovery/REC-01-Controlled-Application-Outage.png,af0e924b5d9b133a7c8a7a85d6f08a764a50380bf113c1446a12d8bf135443bd,Controlled service stop and HTTP000
+REC-02-Service-Restored-Authentication-Enforced.png(1).png,Included,Recovery/REC-02-Service-Restored-Authentication-Enforced.png,b100aa6b99005ae11aaa13543e5e8dd50c8bfabdc82758d39d1cf1fd77c4d979,Service restored and unauthenticated 401
+REC-03-Remote-Post-Recovery-Validation(1).png,Included,Recovery/REC-03-Remote-Post-Recovery-Validation.png,39f37a2f2fde66924a88d77d16352913f081372b4c8cba2df23da09dee0209a9,Kali 401 and ping success after recovery
+AUTH-01-Unauthenticated-Access-Denied(1).png,Included,Authentication/AUTH-01-Unauthenticated-Access-Denied.png,29ced117a4d4c1f004637071424e9bb5092d2c7b89db1fcf4e299be3f92445c1,Unauthenticated Basic Auth 401
+AUTH-02-Valid-Credentials-HTTP-200.png(1).png,Included,Authentication/AUTH-02-Valid-Credentials-HTTP-200.png,81abc80f54692425f9950a3828ba923fceb8354481791943663e9ac5d7fd77b7,Local Python client valid Basic Auth 200 (pre-TLS)
+AUTH-03-Kali-Unauthorized-Requests(1).png,Included,Authentication/AUTH-03-Kali-Unauthorized-Requests.png,022dbd7ebb5a79466580cd99f7e8209ff3fbe0d6b2d4ca931f24deb5c0498aeb,Kali invalid Basic Auth 401 (pre-TLS)
+AUTH-04-Kali-Authorized-Access.png(1).png,Included,Authentication/AUTH-04-Kali-Authorized-Access.png,7f661b0e43100e844df9e7051fde49a7f953ac1c8ee5fc215fa6e2f6f58bc2e1,Kali valid Basic Auth 200 (pre-TLS)
+UTH-05-Unauthorized-Windows-Client-Blocked.png(1).png,Included,Authentication/AUTH-05-Unauthorized-Windows-Client-Blocked.png,067fefa81f911e30f4aee9d01360f29492dae0e49eb868166fe3f30179953be7,Windows port 8080 blocked; historical firewall proof
+Screenshot 2026-10-10 165224(1).png,Included,Supplemental/AUTH-Authentication-Curl-Diagnostic.png,de8f96972e949ee2741e44b05a4c17457f0707a4d22b0064fab44bffa46c7a50,"Curl valid credentials 401, not proof of successful login"
+Screenshot 2026-10-10 165103(1).png,Included,Supplemental/AUTH-Service-Log-Diagnostic.png,41193a071cc337cb2bc9cf4509336d537f9f215fbebfe83b4dd363f116f74f15,HTTP logs and application listener; historical

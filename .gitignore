@@ -1,0 +1,27 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+credentials*.json
+secrets*.json
+
+# VM disks and saved states
+*.vdi
+*.vmdk
+*.vhd
+*.vhdx
+*.sav
+*.ova
+
+# Local transient artifacts
+__pycache__/
+*.pyc
+Thumbs.db
+Desktop.ini
+*.tmp

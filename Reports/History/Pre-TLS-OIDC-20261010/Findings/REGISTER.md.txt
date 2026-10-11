@@ -1,0 +1,39 @@
+# Security Findings Register
+
+Entries distinguish an observed issue, a design review item and missing validation. No entry is marked resolved without closure evidence. No production risk rating is assigned from lab screenshots alone.
+
+| ID | Type | Status | Evidence / Observation | Required Follow-Up |
+| --- | --- | --- | --- | --- |
+| DNS-001 | DNS discrepancy | Open | Latest domain-root A query: NOERROR, ANSWER: 0; DC and GC A records resolve to 10.10.10.10. Earlier NAT/delegation issues require context | Establish intended root-record behavior; compare authoritative records and Windows/Kali queries; verify AD locator records and stability before closing |
+| SEG-VAL-001 | Persistence evidence gap | Open, partially corroborated | AUTH-01 journal shows a boot boundary and service startup consistent with earlier SEG-10; stored configuration and current remote persistence checks remain incomplete | Export sanitized network/unit policy; paired boot checks; repeat authenticated remote allow/deny tests after reboot |
+| SEG-DES-001 | Administrative exposure review | Open review | SSH allowed from Anywhere on enp0s3, including IPv6 | Document NAT forwarding, authorized administrators and intended interface exposure; assess source restriction |
+| SEG-DES-002 | Application transport risk | Open | Local HTTP Basic now verified; transport remains plaintext HTTP | Implement and validate TLS before broader use; assess enterprise identity/device controls separately |
+| SEG-VAL-002 | Protocol/control coverage gap | Open | No IPv6, outbound or routed-path testing in supplied captures | Define intended policy and collect positive/negative tests for each applicable path |
+| REC-VAL-001 | Backup restoration gap | Open | Legacy snapshot and DNS-14 exports show preparation; new REC-01/02/03 show service recovery, not backup restore | Verify backup artifacts and test a controlled backup/snapshot restore |
+| AUTH-VAL-001 | Remote authentication evidence gap | Partial | Kali valid and invalid requests are verified; dedicated pre-recovery unauthenticated capture not found; REC-03 verifies it after recovery | Keep pre-recovery result operator-reported until separate evidence exists |
+| REC-VAL-002 | Positive access after recovery | Open | REC-03 verifies 401/401 and ping 2/2 only | Capture valid credentials returning 200 and verified content after recovery; repeat Windows TCP denial |
+| AUTH-DES-001 | Authentication hardening coverage | Open review | Successful/rejected local Basic requests demonstrated; implementation/configuration not inspected | Assess secret storage, credential lifecycle, brute-force controls, authorization and authenticated-request audit logging |
+
+DNS-001 is detailed in [Open-Findings.md](../Reports/Open-Findings.md). Evidence gaps are listed in [Missing-Evidence.md](../Reports/Missing-Evidence.md). These records document proposed follow-up only; repository maintenance did not apply any fixes to the lab systems.
+
+## Remediation Priorities and Closure Criteria
+
+Priorities below are a proposed lab engineering order, not CVSS scores, production severity ratings or deadlines. P1 is a prerequisite for broader use or the corresponding completion claim; P2 is the next design/validation work; P3 is historical evidence completeness. All existing entries remain open or partial.
+
+| Priority | Finding | Recommendation / Closure Evidence |
+| --- | --- | --- |
+| P1 | SEG-DES-002 - Basic without TLS | Keep use isolated; implement TLS with certificate validation before broader deployment. Demonstrate authenticated HTTPS and rejection/redirect of plaintext access without sending credentials over HTTP. Review exposed lab credentials for rotation; do not claim this work is already done. |
+| P1 | REC-VAL-002 - positive recovery validation | Capture a post-recovery valid request returning 200 with the expected content marker, plus a fresh Windows TCP denial. Earlier AUTH-04/05 do not close this entry. |
+| P2 | DNS-001 - domain-root discrepancy | Establish intended root-record behavior; compare authoritative records and client results, validate AD locator/DC/GC records, and repeat after the relevant registration cycle. NOERROR with no A answer is not NXDOMAIN and does not by itself prove service failure. Keep open until intended behavior and closure evidence are documented. |
+| P2 | SEG-DES-001 - SSH exposure | Inspect and document alias/forwarding, authorized sources and IPv4/IPv6 exposure; assess narrower management access and capture approved/denied tests. |
+| P2 | SEG-VAL-001 - persistence | Capture sanitized stored network/service/UFW configuration and paired boot evidence, then remote authenticated success and unauthorized denial after reboot. |
+| P2 | SEG-VAL-002 - path coverage | Define applicable IPv6, outbound and routed policies; test both allowed and denied paths or explicitly document why a path is out of scope. |
+| P2 | AUTH-DES-001 - credential hardening | Review secret storage and permissions, credential rotation, rate limiting/lockout, authorization and request audit logging. Validate any implemented controls without publishing their secret values. |
+| P2 | REC-VAL-001 - restore | Review backup artifacts and demonstrate a controlled restore and content validation separately from systemd restart; only claim measured RTO/RPO if timings/data checkpoints are captured. |
+| P3 | AUTH-VAL-001 - historical no-credential capture | Add a separate pre-recovery capture if available; otherwise preserve the operator-reported qualification and rely only on the verified post-recovery result for that stage. |
+
+## Publication Finding
+
+**PUB-001 - Open, publication blocker.** Three images show explicit rejected test-password literals: AUTH-03, REC-03 and archived TRB-02. No valid credential was observed, but the operator requires no passwords in the published portfolio. Preserve originals and replace publication copies with reviewed password-free captures or approved sanitized derivatives before staging. No derivative has been created. See [Publication Review](../Reports/Publication-Review.md) for exact paths and hashes. This finding is separate from the lab's authentication behavior.
+
+Transport rationale: [RFC 7617](https://www.rfc-editor.org/rfc/rfc7617.html#section-4). Architecture scope: [NIST SP 800-207](https://csrc.nist.gov/pubs/sp/800/207/final). Recommendations are not evidence of implementation or standards compliance.

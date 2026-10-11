@@ -1,0 +1,47 @@
+# Publication Review
+
+Review date: 2026-10-10. **Publication held. No commit, push or repository creation authorized.** This review applies only to the current project files and image hashes, not future additions or the entire computer.
+
+## Screenshot Review
+
+All 54 retained project PNGs were individually inspected, including historical DNS, root-level baseline, segmentation, authentication, recovery, supplemental and archived images. No visible valid password, bearer token, encoded live Authorization value or private-key material was observed. Successful Python authentication uses hidden input; code that constructs a Basic header is visible, not its value.
+
+51 images have no visible password/secret publication hold. Three contain explicit rejected test-password strings. Although those inputs received 401 and are not known valid credentials, they do not satisfy the operator's requirement to publish no passwords. Their literal values are not repeated here.
+
+| Held File | Observed Issue | Required Publication Action |
+| --- | --- | --- |
+| [AUTH-03](../Evidence/Authentication/AUTH-03-Kali-Unauthorized-Requests.png) | Invalid credential literal in the command | Password-free recapture or approved sanitized derivative; retain source |
+| [REC-03](../Evidence/Recovery/REC-03-Remote-Post-Recovery-Validation.png) | Invalid credential literal in post-recovery test | Password-free recapture or approved sanitized derivative; retain source |
+| [Archived TRB-02](../Evidence/Archive/Authentication/TRB-02-Ubuntu-Initial-Interactive-Tests-HTTP-401.png) | Rejected credential literal in troubleshooting history | Password-free derivative or exclude from a separately reviewed publication bundle, with documented link/index handling |
+
+The [per-image review manifest](../Evidence/Publication-Review.csv) records paths, SHA-256 hashes and decisions. No image pixels were changed, no originals were deleted, and no hold was bypassed by renaming an image. The portfolio must not be staged wholesale while these three images remain in the intended publication set. Image cleaning/replacement and any exclusion require a follow-up reviewed publication set.
+
+Visible lab hostnames, private IPs, usernames, MAC addresses and local paths are contextual metadata, not credentials. The operator should confirm they are appropriate for public display. Windows registry key paths in DNS troubleshooting are not cryptographic private keys. This is a visual review, not a guarantee against hidden metadata or steganography.
+
+## File and Link Review
+
+Current publication candidates are documentation, CSV provenance/inventories and PNG evidence. Secret-file/content checks are recorded in the local review workspace; no credential configuration or VM disk was intentionally imported. The existing .gitignore covers common credential files, private-key formats and VM disks, but is not a secret scanner and does not prevent sensitive pixels in PNGs.
+
+The local validator checked 169 Markdown file links with no missing targets, all 54 PNGs unchanged against the before-state, and all 84 pre-existing project files preserved. Explicit key/token/Authorization-header pattern checks and sensitive-filename checks found no candidate text files; these checks do not replace screenshot review or certify the authentication implementation. The per-image manifest matches all 54 current hashes.
+
+Historical inventory CSVs retain prior filenames intentionally; the filename change map reconciles those paths. External standards references are RFC 7617 and NIST SP 800-207. All three Mermaid diagrams were rendered and visually checked in the local review workspace. They are logical reconstructions, not evidence that untested controls exist.
+
+## Repository Gate
+
+The project folder has no .git metadata. No matching SECX/SecurityX repository was found in the accessible KSWISHA9 listing during this review. Existing SEC-001 SOC and SEC-002 vulnerability repositories must remain separate. Confirm the intended SECX-001 repository name and visibility before creation or initialization; do not repurpose a different project.
+
+The proposed changes are compared with the preserved before-state using git diff --no-index. That comparison is a file review, not a staged diff or a GitHub push.
+
+## Release Checklist
+
+- [x] Review all 54 screenshots and record exact image hashes.
+- [x] Preserve source evidence and distinguish failed/superseded tests from successful results.
+- [x] Document three password-literal holds without repeating their values.
+- [x] Keep DNS-001, plaintext Basic transport and recovery evidence gaps open.
+- [ ] Prepare and visually re-review password-free replacements or approved publication derivatives/exclusions.
+- [ ] Confirm contextual metadata is acceptable for public display.
+- [ ] Recheck hashes, links and secrets against the exact release bundle after replacements.
+- [ ] Confirm the correct repository and visibility.
+- [ ] Review the final proposed diff and obtain explicit staging/commit/push approval.
+
+Publication is not approved by completion of the technical report. No VM or network modification is part of this review.

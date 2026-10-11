@@ -1,0 +1,47 @@
+# Missing Evidence and Follow-Up Items
+
+## Missing or Recommended Evidence
+
+The segmentation evidence is strong enough to document the completed host-based microsegmentation lab. The following items would make the project stronger if captured later:
+
+| Item | Why It Matters | Status |
+| --- | --- | --- |
+| Architecture diagram showing trust boundaries and traffic flows | Reconstructed from evidence in Architecture/Architecture.md; exported hypervisor topology remains unverified | Documented reconstruction |
+| UFW command history or sanitized rule export | Shows the exact intended policy in text form, easier to review than screenshots alone | Missing |
+| Authorized source inventory | README records the configured allowlist; client-side IP capture still needed | Partial |
+| Unauthorized source inventory | Windows test shows SourceAddress 10.10.10.1; broader host inventory still needed | Partial |
+| Change record or implementation notes | Makes the project feel more like a real security engineering change | Missing |
+| Final DNS validation screenshot after remediation | Required before closing DNS-001 | Missing |
+| Paired boot IDs, uptime or reboot logs | AUTH-01 now includes a journal boot boundary; paired checks and authenticated application persistence still needed | Partial |
+| Remote approved and unauthorized tests after the demonstrated reboot | Host-local HTTP success does not prove persisted remote segmentation | Missing |
+| Persistent network configuration and systemd unit export | Runtime IPs and enabled status do not show exact stored configuration | Missing |
+| Snapshot restore and post-restore validation | Snapshot creation and export commands show preparation, not a tested recovery | Missing |
+| Kali unauthenticated request before recovery | Operator reports 401; located standalone AUTH-03 only shows incorrect credentials; REC-03 shows unauthenticated 401 after recovery | Dedicated earlier capture missing |
+| Valid credentials and content after recovery | REC-03 contains negative tests and ping only | Missing |
+| Windows TCP denial after recovery | Earlier AUTH-05 is not a fresh post-recovery test | Missing |
+| TLS and authentication implementation review | Basic authentication is verified but plaintext transport remains; credential-storage protection not established | Open design work |
+
+## Not Missing
+
+The following evidence is present:
+
+- Baseline network exposure
+- Unrestricted application exposure before enforcement
+- Filtered-port result after firewall enforcement
+- Authorized SSH access
+- Authorized application access
+- UFW active policy and application listener
+- Unauthorized-client denial
+- Firewall denial logging
+- Systemd-managed application evidence
+- Reported reboot validation capture, with independently verified reboot evidence still missing
+- VirtualBox pre-DNS snapshot creation and listing
+- DNS/registry export commands with success messages
+- Ubuntu unauthenticated 401 and valid-credential Python 200/content check
+- Kali invalid-credential 401 and valid-credential Python 200/content check
+- Windows blocked TCP 8080 during authentication phase
+- Controlled application stop, restart and remote post-recovery negative tests
+
+## Safety Note
+
+The unresolved DNS domain-root issue should not be described as remediated until supporting evidence proves it.

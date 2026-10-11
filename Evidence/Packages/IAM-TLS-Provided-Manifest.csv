@@ -1,0 +1,20 @@
+original_filename,reviewed_relative_path,classification,what_it_shows,sha256
+IAM-01-Keycloak-Realm-and-Roles.png.png,IAM/IAM-01-Keycloak-Realm-and-Roles.png,Primary,Realm and analyst/viewer role creation shown in CLI output,3d254dc8d4aba9f44e3a6d9853a56c47fea360c16e82981e3419b16d1a43920a
+IAM-02-User-Role-Assignments.png.png,IAM/IAM-02-User-Role-Assignments.png,Primary,CLI output showing distinct analyst and viewer user role assignments,8d0e4215d437c7e42263a76a6c2872ef8f4d24e0ad845b07dc053efa0edba02e
+IAM-03-OIDC-Client-Configuration.png.png,IAM/IAM-03-OIDC-Client-Configuration.png,Primary,Confidential OIDC client created with 8443 callback,189652ecae1450ab4fca2300dbbd03d4c8729721425985a32c3abde84089119a
+IAM-04-Keycloak-Admin-Console.png.png,IAM/IAM-04-Keycloak-Admin-Console.png,Primary,Keycloak omniverse realm admin console,417c953388c136b85220c3102acfaef064f59376a5292c487f74e714c688fce5
+IAM-05-Keycloak-Admin-Console.png.png,Supplemental/IAM-Admin-Console-Alternate.png,Supplemental,Alternate Keycloak admin screenshot; check overlap with IAM-04,b7c1c5344425cf271d543fdcf818eea9cabfb4c3b8ad7f5c5fe0e029e8406d08
+IAM-05-OIDC-Client-Settings.png,IAM/IAM-05-OIDC-Client-Settings.png,Primary,OIDC client settings and redirect URI; temporary admin warning visible,98346ce0e271866cf23bd23e692aeb8a2b2aa20026082766c4da090905bafb87
+IAM-06-Keycloak-HTTPS-Service.png.png,IAM/IAM-06-Keycloak-HTTPS-Service.png,Primary,Keycloak systemd active and HTTPS discovery 200,e4bad44fcdc8cf6ddf43c3047dc419c3c230c8d51e66367ad19d7c213063c8f3
+IAM-07-Keycloak-Firewall-Policy.png.png,IAM/IAM-07-Keycloak-Firewall-Policy.png,Primary,UFW allowlist for Keycloak 8444 and HTTPS 200,485922e723af3e762ed02a590986f2fd2a5648ffdd1d39c009f2623b3ea06f91
+IAM-08-Remote-Keycloak-HTTPS-Validation.png.png,IAM/IAM-08-Remote-Keycloak-HTTPS-Validation.png,Primary,"Kali Keycloak 200, app 401, Nmap filtering",81ed5e3cbe4ee75cf479feb37845b671b1c689ae4c4db96966d1899f7710d90c
+IAM-09-OIDC-Test-Client-and-Firewall.png.png,IAM/IAM-09-OIDC-Test-Port-Firewall.png,Primary,UFW 8445 rule visible; callback registration not visible in captured frame,89b30edbeafea1a98e34f01189532830d0b5bfb9601952cdeaaee50bc4d301d6
+IAM-11-OIDC-Analyst-Authorized.png.png,IAM/IAM-11-OIDC-Analyst-Authorized.png,Primary,Analyst-only dashboard displays Authorized; account identity not visible on same screenshot,7a3d58b9a1716448046b5bd06bb109a6219b78b7b49a937fbadf2af9c48e7e94
+IAM-12-OIDC-Viewer-Login.png.png,IAM/IAM-12-OIDC-Viewer-Login.png,Primary,ov-viewer authenticated with viewer role visible,ffccf6d86b2b3cc8ed93456cdc7b7e01a931ecfc5d795638686522eed4e22f8d
+IAM-13-OIDC-Viewer-Forbidden.png.png,IAM/IAM-13-OIDC-Viewer-Forbidden.png,Primary,Forbidden response; account identity not visible on same screenshot,687434dce7815111723d8aad600cb74e8b4d0dea58b87f1dadf667058e4de10f
+Screenshot 2026-10-10 180354.png,IAM/IAM-10-Keycloak-Required-Profile-Update.png,Primary,Required account profile update screen,a34949275f4586f3138592999d8728286b4364a00cfe31cbc4c48a13deae55b7
+Screenshot 2026-10-10 174615.png,Supplemental/IAM-OIDC-Client-Settings-Alternate.png,Supplemental,Alternate screenshot of client settings; appears duplicate,98346ce0e271866cf23bd23e692aeb8a2b2aa20026082766c4da090905bafb87
+TLS-05-Final-Network-Validation.png.png,TLS/TLS-05-Final-Network-Validation.png,Primary,"Kali 22 and 8080 filtered, 8443 open, HTTPS 401 and HTTP 000",d0c66ebbaa9801fa8bb252fa4e52805674ebaf893b8b8afe9213d40832cdae21
+TLS-04-HTTP-Retired-HTTPS-Enforced.png .png,TLS/TLS-04-HTTP-Retired-HTTPS-Enforced.png,Primary,"Ubuntu UFW 8080 rule deleted, 8443 listener, HTTPS 401",190cedbf66336492f9e53de002f1b73d47a0983c4df507b16f3980ddb06fadaa
+Screenshot 2026-10-10 172835.png,Supplemental/TLS-HTTP-Retirement-Alternate.png,Supplemental,Alternate capture of HTTP retirement validation; appears duplicate,190cedbf66336492f9e53de002f1b73d47a0983c4df507b16f3980ddb06fadaa
+TLS-03-Authenticated-HTTPS-Access.png.png,TLS/TLS-03-Authenticated-HTTPS-Access.png,Primary,TLS authentication evidence; inspect source screenshot for precise claim,38e1687eb771b9a36345b856f01cccc00ef86c1bff24d192d7e65269a2b56239

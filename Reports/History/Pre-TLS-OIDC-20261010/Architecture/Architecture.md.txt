@@ -1,0 +1,103 @@
+# Architecture and Traffic Flows
+
+Review date: 2026-10-10. **Evidence-based logical architecture; project in progress.** These diagrams reconstruct screenshot-supported flows, not an exported VirtualBox topology. Boundaries are enforcement points, not separate VLANs. No VM configuration was changed to produce these diagrams.
+
+## Network and Trust Boundaries
+
+```mermaid
+flowchart LR
+    subgraph clients["Lab clients - network location is not user identity"]
+        K["Kali application client<br/>Configured allowlist: 10.10.10.100"]
+        W["Windows negative-test client<br/>Observed source: 10.10.10.1"]
+    end
+    subgraph admin["Privileged administration path"]
+        A["Windows administrator<br/>SSH alias: omniverse-ubuntu"]
+    end
+    subgraph ubuntu["Ubuntu protected host"]
+        F["Boundary 1: UFW on enp0s8<br/>10.10.10.101/24<br/>Default incoming deny"]
+        S["SSH on enp0s3<br/>10.0.2.15/24<br/>Allow Anywhere, IPv4 and IPv6"]
+        P["Boundary 2: local application authentication<br/>secx001-app.service / auth_server.py<br/>TCP 8080; HTTP Basic without TLS"]
+        C["Protected training content<br/>Valid local credentials required"]
+        L["Local kernel and application journal<br/>Denials and request status"]
+    end
+    subgraph dependency["Separate AD and DNS dependency"]
+        D["OV-DC01: 10.10.10.10<br/>corp.omniverse.com<br/>DNS-001 OPEN"]
+    end
+    K -->|"PERMITTED: TCP 8080 on enp0s8"| F
+    W -->|"DENIED: TCP 8080; no app session"| F
+    A -->|"SSH shell observed; alias mapping not captured"| S
+    F -->|"Allowed requests reach authentication"| P
+    P -->|"Valid credentials: HTTP 200"| C
+    F -->|"UFW BLOCK events"| L
+    P -->|"HTTP status in journal"| L
+    K -.->|"DNS queries observed; not app identity federation"| D
+    linkStyle 0,2,3,4 stroke:#16803c,stroke-width:2px
+    linkStyle 1 stroke:#c62828,stroke-width:3px
+```
+
+Green labeled paths are permitted/observed; the red labeled path ends at the firewall and is denied, not a successful connection. The dotted DNS path is a separate investigation. Local application authentication is not integrated with the domain controller. DC/GC records resolve, while the domain-root A query returns NOERROR with an empty answer in the latest detailed capture. Its intended behavior remains to be established.
+
+The Kali source address is specified by the UFW rule; a separate Kali IP inventory capture is missing. The administration path is supported by a successful SSH shell and interface-scoped UFW rules, not an inspected NAT port-forward/alias configuration. ICMP remains reachable from Windows in the negative application tests; denying TCP 8080 does not mean all Windows traffic is blocked.
+
+## Application Access Decisions
+
+```mermaid
+sequenceDiagram
+    participant K as Kali approved client
+    participant W as Windows test client
+    participant F as Ubuntu UFW
+    participant P as Local Basic app
+    K->>F: TCP 8080 request
+    F->>P: Allowed source reaches listener
+    alt No credentials or invalid credentials
+        P-->>K: HTTP 401, content not granted
+    else Valid credentials before recovery
+        P-->>K: HTTP 200, application marker verified
+    end
+    W-xF: TCP 8080 denied
+    Note over W,P: Windows does not reach application authentication
+    Note over K,P: HTTP without TLS does not protect credentials or content in transit
+```
+
+Evidence: Ubuntu 401/200 in AUTH-01/02; Kali invalid/valid in AUTH-03/04; Windows denial in AUTH-05. Kali no-credential 401 is screenshot-verified after recovery in REC-03; its dedicated pre-recovery capture is missing. The sequence is a logical decision model, not a timestamped packet trace.
+
+## Controlled Service Recovery
+
+```mermaid
+flowchart LR
+    O["Controlled stop - REC-01<br/>Inactive; no listener on 8080<br/>HTTP 000; curl exit 7"]
+    R["Restart - REC-02<br/>Active; listener 10.10.10.101:8080<br/>Local unauthenticated HTTP 401"]
+    N["Remote negative tests - REC-03<br/>Kali no credentials: 401<br/>Kali invalid credentials: 401<br/>Ping: 2 of 2 successful"]
+    G["OPEN validation gap - REC-VAL-002<br/>Valid credentials and content after recovery<br/>Fresh Windows TCP denial after recovery"]
+    O --> R --> N
+    N -.->|"Next evidence needed; not a passed test"| G
+```
+
+Restoring a listener and a 401 challenge verifies the authentication endpoint, not restored authenticated user access. No backup restoration, RTO/RPO attainment, high availability or post-recovery valid-credential success is demonstrated. HTTP 000 is curl's no-response placeholder, not a server status.
+
+## Observed Policy
+
+| Surface | Visible policy | Evidence |
+| --- | --- | --- |
+| Incoming traffic | Default deny | SEG-12 |
+| Application | Allow 10.10.10.100 to 10.10.10.101 TCP 8080 on enp0s8 | SEG-06/12 |
+| Administration | Allow TCP 22 from Anywhere on enp0s3, including IPv6 | SEG-06/12 |
+| Outgoing traffic | Default allow | SEG-12 |
+| Routed traffic | Disabled in UFW verbose output; routing behavior not tested | SEG-12 |
+| Logging | On, medium level | SEG-12 |
+
+## Threat Model and Scope
+
+Tests cover a non-approved Windows source, approved-path requests with missing/invalid/valid credentials, and a controlled application outage. An approved IP does not establish user or device trust. Valid local credentials grant content, but enterprise role policy, MFA, device posture, credential lifecycle and brute-force protections are not demonstrated. A compromised approved client or stolen valid credentials remain risks.
+
+Basic authentication does not encrypt credentials. TLS is required before using this pattern beyond the isolated training context. See [RFC 7617, security considerations](https://www.rfc-editor.org/rfc/rfc7617.html#section-4).
+
+The project demonstrates **host-based microsegmentation and local application authentication, not complete enterprise Zero Trust**. NIST's model does not infer trust from network location and addresses subject/device authentication and authorization. This lab does not implement that full model. See [NIST SP 800-207](https://csrc.nist.gov/pubs/sp/800/207/final).
+
+## Persistence and Evidence Limits
+
+SEG-08 shows runtime interfaces, not an exported persistent network configuration. SEG-09 shows service enablement/active status and HTTP 200 but a blank immediate listener query. SEG-10 shows a listener and operational state for the earlier application; AUTH-01's journal boot boundary corroborates historical startup chronology. Paired boot checks and remote positive/negative persistence tests for the authenticated deployment remain missing. Recovery stop/start tests do not substitute for them.
+
+The full systemd unit, network configuration and authentication implementation were not exported or inspected. Historical root-level filenames are not independent topology assertions: SECX001-02-DC-NAT-Adapter.png actually displays the host-only second adapter. DNS captures and root-level baseline images remain preserved for context.
+
+Use the [findings register](../Findings/REGISTER.md), [evidence index](../Evidence/PRIMARY-INDEX.md) and [missing-evidence report](../Reports/Missing-Evidence.md) for control-level evidence and closure requirements.
